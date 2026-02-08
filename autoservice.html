@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>KL INAP – Lavandería Autoservicio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --blue: #2f86c9; /* azul del logo */
+      --green: #9bc53d; /* verde del logo */
+      --dark: #1f2933;
+      --light: #f5f7fa;
+      --red: #e02424; /* rojo para cancelar */
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      background: white;
+      width: 100%;
+      max-width: 900px;
+      height: 100vh;
+      max-height: 600px;
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    header h1 {
+      color: var(--dark);
+      font-size: 28px;
+      margin: 0;
+    }
+
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+      position: relative; /* para ubicar el botón en la esquina */
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    h2 {
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 20px;
+      color: #4b5563;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    button {
+      padding: 24px;
+      font-size: 22px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      background: var(--blue);
+      color: white;
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    button.secondary {
+      background: var(--green);
+    }
+
+    button:hover {
+      transform: scale(1.03);
+      background: #256fa8;
+    }
+
+    button.secondary:hover {
+      background: #86ad34;
+    }
+
+    /* Botón de cancelar en rojo, anclado abajo a la derecha */
+    button.danger {
+      background: var(--red);
+    }
+
+    button.danger:hover {
+      background: #c81e1e;
+    }
+
+    .corner {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+    }
+
+    /* Ajuste de texto para pantallas específicas */
+    .screen.raise h2,
+    .screen.raise p {
+      transform: translateY(-16px);
+    }
+
+    /* Spinner de carga */
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid var(--light);
+      border-top: 6px solid var(--blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <img src="logo.png" alt="KL INAP" />
+      <h1></h1>
+    </header>
+
+    <!-- Pantalla 1 -->
+    <div class="screen active" id="start">
+      <h2>Bienvenido</h2>
+      <p>Toque la pantalla para comenzar</p>
+      <div class="buttons">
+        <button onclick="go('service')">Empezar</button>
+      </div>
+    </div>
+
+    <!-- Pantalla 2 -->
+    <div class="screen raise" id="service">
+      <h2>¿Qué desea hacer?</h2>
+      <div class="buttons">
+        <button onclick="go('payment')">Lavar</button>
+        <button class="secondary" onclick="go('payment')">Secar</button>
+      </div>
+      <button class="danger corner" onclick="go('start')">Cancelar</button>
+    </div>
+
+    <!-- Pantalla 3 -->
+    <div class="screen raise" id="payment">
+      <h2>Seleccione forma de pago</h2>
+      <div class="buttons">
+        <button onclick="go('waiting')">Pagar con QR</button>
+        <button class="secondary" onclick="go('waiting')">Pagar con Tarjeta</button>
+      </div>
+      <button class="danger corner" onclick="go('start')">Cancelar</button>
+    </div>
+    <!-- Pantalla 3.5 -->
+    <div class="screen" id="waiting">
+      <h2>Esperando para que se efectúe el pago con el POS</h2>
+      <div class="spinner"></div>
+      <div class="buttons">
+        <button onclick="go('process')">Continuar</button>
+      </div>
+    </div>
+    <!-- Pantalla 4 -->
+    <div class="screen" id="process">
+      <h2>Máquina habilitada</h2>
+      <p>Puede utilizar la lavarropa / secarropa asignada</p>
+      <div class="buttons">
+        <button onclick="go('thanks')">Continuar</button>
+      </div>
+    </div>
+
+    <!-- Pantalla 5 -->
+    <div class="screen" id="thanks">
+      <h2>Gracias por elegirnos</h2>
+      <p>KL INAP – Tecnología para lavanderías</p>
+      <div class="buttons">
+        <button onclick="go('start')">Inicio</button>
+      </div>
+    </div>
+
+    <footer>
+      Powered by Kronos Engineering @ 2026
+    </footer>
+  </div>
+
+  <script>
+    function go(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
+</body>
+</html>
