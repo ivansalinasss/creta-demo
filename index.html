@@ -151,6 +151,51 @@
       100% { transform: rotate(360deg); }
     }
 
+    /* Formulario de datos del cliente */
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .form-group input {
+      padding: 14px 18px;
+      font-size: 18px;
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      color: var(--dark);
+    }
+
+    .form-group input:focus {
+      border-color: var(--blue);
+    }
+
+    .form-group input.invalid {
+      border-color: var(--red);
+    }
+
+    .btn-primary-full {
+      width: 100%;
+      max-width: 500px;
+    }
+
     footer {
       text-align: center;
       font-size: 14px;
@@ -170,8 +215,29 @@
       <h2>Bienvenido</h2>
       <p>Toque la pantalla para comenzar</p>
       <div class="buttons">
-        <button onclick="go('service')">Empezar</button>
+        <button onclick="go('client')">Empezar</button>
       </div>
+    </div>
+
+    <!-- Pantalla 1.5: Datos del cliente -->
+    <div class="screen" id="client">
+      <h2>Datos para factura electrónica</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="inp-nombre">Nombre completo</label>
+          <input type="text" id="inp-nombre" placeholder="Ej: Juan Pérez" />
+        </div>
+        <div class="form-group">
+          <label for="inp-ruc">CI / RUC</label>
+          <input type="text" id="inp-ruc" placeholder="Ej: 1234567-8" inputmode="numeric" />
+        </div>
+        <div class="form-group">
+          <label for="inp-correo">Correo electrónico</label>
+          <input type="email" id="inp-correo" placeholder="Ej: juan@correo.com" inputmode="email" />
+        </div>
+      </div>
+      <button class="btn-primary-full" onclick="submitClient()">Continuar</button>
+      <button class="danger corner" onclick="go('start')">Cancelar</button>
     </div>
 
     <!-- Pantalla 2 -->
@@ -225,9 +291,64 @@
   </div>
 
   <script>
+    function clearClient() {
+      ['inp-nombre', 'inp-ruc', 'inp-correo'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('invalid');
+      });
+    }
+
     function go(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
+      if (id === 'start') clearClient();
+    }
+
+    const DEMO_DATA = {
+      nombre: 'Juan Pérez',
+      ruc:    '1234567-8',
+      correo: 'juan@correo.com'
+    };
+
+    function typeValue(input, text, delay, callback) {
+      input.value = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        input.value += text[i++];
+        if (i >= text.length) {
+          clearInterval(interval);
+          if (callback) setTimeout(callback, delay);
+        }
+      }, 40);
+    }
+
+    function submitClient() {
+      const nombre = document.getElementById('inp-nombre');
+      const ruc    = document.getElementById('inp-ruc');
+      const correo = document.getElementById('inp-correo');
+
+      [nombre, ruc, correo].forEach(el => el.classList.remove('invalid'));
+
+      // Si algún campo está vacío, autocompleta con datos de ejemplo
+      const anyEmpty = !nombre.value.trim() || !ruc.value.trim() ||
+                       !correo.value.trim() || !correo.value.includes('@');
+
+      if (anyEmpty) {
+        // Deshabilitar botones mientras se autocompleta
+        document.querySelectorAll('#client button').forEach(b => b.disabled = true);
+
+        typeValue(nombre, DEMO_DATA.nombre, 0, () => {
+          typeValue(ruc, DEMO_DATA.ruc, 0, () => {
+            typeValue(correo, DEMO_DATA.correo, 800, () => {
+              document.querySelectorAll('#client button').forEach(b => b.disabled = false);
+              go('service');
+            });
+          });
+        });
+      } else {
+        go('service');
+      }
     }
   </script>
 </body>
