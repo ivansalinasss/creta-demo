@@ -196,6 +196,19 @@
       max-width: 500px;
     }
 
+    .client-actions {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .client-actions button {
+      flex: 1;
+      padding: 16px;
+      font-size: 18px;
+    }
+
     footer {
       text-align: center;
       font-size: 14px;
@@ -236,8 +249,10 @@
           <input type="email" id="inp-correo" placeholder="Ej: juan@correo.com" inputmode="email" />
         </div>
       </div>
-      <button class="btn-primary-full" onclick="submitClient()">Continuar</button>
-      <button class="danger corner" onclick="go('start')">Cancelar</button>
+      <div class="client-actions">
+        <button onclick="submitClient()">Continuar</button>
+        <button class="danger" onclick="go('start')">Cancelar</button>
+      </div>
     </div>
 
     <!-- Pantalla 2 -->
