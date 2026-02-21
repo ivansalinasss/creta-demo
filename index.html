@@ -10,7 +10,7 @@
       --green: #9bc53d; /* verde del logo */
       --dark: #1f2933;
       --light: #f5f7fa;
-      --red: #e02424; /* rojo para cancelar */
+      --red: #c0392b; /* rojo para cancelar */
     }
 
     * {
@@ -121,7 +121,7 @@
     }
 
     button.danger:hover {
-      background: #c81e1e;
+      background: #a93226;
     }
 
     .corner {
@@ -273,9 +273,9 @@
       <h2>¿Qué desea hacer?</h2>
       <div class="buttons">
         <button onclick="go('payment')">Lavar</button>
-        <button class="secondary" onclick="go('payment')">Secar</button>
+        <button onclick="go('payment')">Secar</button>
       </div>
-      <button class="danger corner" onclick="go('start')">Cancelar</button>
+      <button class="danger" style="width:100%;max-width:600px;" onclick="go('start')">Cancelar</button>
     </div>
 
     <!-- Pantalla 3 -->
@@ -283,9 +283,9 @@
       <h2>Seleccione forma de pago</h2>
       <div class="buttons">
         <button onclick="go('waiting')">Pagar con QR</button>
-        <button class="secondary" onclick="go('waiting')">Pagar con Tarjeta</button>
+        <button onclick="go('waiting')">Pagar con Tarjeta</button>
       </div>
-      <button class="danger corner" onclick="go('start')">Cancelar</button>
+      <button class="danger" style="width:100%;max-width:600px;" onclick="go('start')">Cancelar</button>
     </div>
     <!-- Pantalla 3.5 -->
     <div class="screen" id="waiting">
