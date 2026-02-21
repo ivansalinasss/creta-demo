@@ -224,6 +224,68 @@
       border-top: 1px solid #e5e7eb;
       width: 100%;
     }
+
+    /* Cards de máquinas */
+    .machine-cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .machine-card {
+      flex: 1;
+      border: 2px solid #d1d5db;
+      border-radius: 18px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+      background: white;
+    }
+
+    .machine-card:not(.disabled):hover {
+      border-color: var(--blue);
+      box-shadow: 0 4px 16px rgba(47,134,201,0.18);
+      transform: scale(1.03);
+    }
+
+    .machine-card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f3f4f6;
+    }
+
+    .machine-number {
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+    }
+
+    .machine-capacity {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .machine-status {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .machine-status.available {
+      background: #dcfce7;
+      color: #16a34a;
+    }
   </style>
 </head>
 <body>
@@ -272,10 +334,33 @@
     <div class="screen raise" id="service">
       <h2>¿Qué desea hacer?</h2>
       <div class="buttons">
-        <button onclick="go('payment')">Lavar</button>
-        <button onclick="go('payment')">Secar</button>
+        <button onclick="selectService('lavar')">Lavar</button>
+        <button onclick="selectService('secar')">Secar</button>
       </div>
       <button class="danger" style="width:100%;max-width:600px;" onclick="go('start')">Cancelar</button>
+    </div>
+
+    <!-- Pantalla 2.5: Selección de máquina -->
+    <div class="screen" id="machine">
+      <h2 id="machine-title">Elige Lavarropa</h2>
+      <div class="machine-cards">
+        <div class="machine-card" onclick="selectMachine(this)">
+          <div class="machine-number">1</div>
+          <div class="machine-capacity">10 kg</div>
+          <div class="machine-status available">Disponible</div>
+        </div>
+        <div class="machine-card" onclick="selectMachine(this)">
+          <div class="machine-number">2</div>
+          <div class="machine-capacity">18 kg</div>
+          <div class="machine-status available">Disponible</div>
+        </div>
+        <div class="machine-card disabled">
+          <div class="machine-number">3</div>
+          <div class="machine-capacity">10 kg</div>
+          <div class="machine-status">En uso</div>
+        </div>
+      </div>
+      <button class="danger" style="width:100%;max-width:700px;margin-top:8px;" onclick="go('service')">Cancelar</button>
     </div>
 
     <!-- Pantalla 3 -->
@@ -298,7 +383,7 @@
     <!-- Pantalla 4 -->
     <div class="screen" id="process">
       <h2>Máquina habilitada</h2>
-      <p>Puede utilizar la lavarropa / secarropa asignada</p>
+      <p id="process-subtitle" style="font-size:26px; font-weight:700; color:var(--dark);">Puede utilizar la Lavarropa 1</p>
       <div class="buttons">
         <button onclick="go('thanks')">Continuar</button>
       </div>
@@ -319,6 +404,8 @@
   </div>
 
   <script>
+    let currentService = 'lavar';
+
     function clearClient() {
       ['inp-nombre', 'inp-ruc', 'inp-correo'].forEach(id => {
         const el = document.getElementById(id);
@@ -331,6 +418,21 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       if (id === 'start') clearClient();
+    }
+
+    function selectService(service) {
+      currentService = service;
+      document.getElementById('machine-title').textContent =
+        service === 'lavar' ? 'Elige Lavarropa' : 'Elige Secarropa';
+      go('machine');
+    }
+
+    function selectMachine(card) {
+      if (card.classList.contains('disabled')) return;
+      const num = card.querySelector('.machine-number').textContent.trim();
+      const label = currentService === 'lavar' ? 'Lavarropa' : 'Secarropa';
+      document.getElementById('process-subtitle').textContent = `Puede utilizar la ${label} ${num}`;
+      go('payment');
     }
 
     const DEMO_DATA = {
